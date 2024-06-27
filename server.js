@@ -10,9 +10,6 @@ const PORT = process.env.PORT || 4000
 const app = express()
 app.use(cors())
 app.use(express.json())
-app.get("/test", (req, res) => {
-  res.json({ status: 200, message: "hola mundo" })
-})
 app.use("/api/auth", authRouter)
 app.use("/api/products", productRouter)
 app.use("/api/carts", cartRouter)
