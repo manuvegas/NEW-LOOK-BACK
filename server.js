@@ -6,12 +6,12 @@ const { db } = require("./src/config/connection.mongodb")
 const { authRouter } = require("./src/auth/auth.router")
 const { productRouter } = require("./src/products/products.router")
 const { cartRouter } = require("./src/Carts/carts.router")
-const PORT = process.env.PORT || 4040
+const PORT = process.env.PORT || 4000
 const app = express()
 app.use(cors())
 app.use(express.json())
-app.get("/test",(req,res)=>{
-  res.json ({status:200, message:"hola mundo"})
+app.get("/test", (req, res) => {
+  res.json({ status: 200, message: "hola mundo" })
 })
 app.use("/api/auth", authRouter)
 app.use("/api/products", productRouter)
