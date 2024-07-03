@@ -17,4 +17,15 @@ const verifyToken = (req, res, next) => {
   })
 }
 
-module.exports = { verifyToken }
+const verifyRole = (role) => {
+  return (req, res, next) => {
+    const { user } = req;
+    if (user && user.role === role) {
+      next();
+    } else {
+      res.status(403).json({ message: "Acceso denegado. No tienes el rol adecuado." });
+    }
+  };
+};
+
+module.exports = { verifyToken, verifyRole }
