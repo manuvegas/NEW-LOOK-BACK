@@ -17,7 +17,7 @@ const crearProducto = async (producto) => {
       throw error
     }
     else {
-      throw { status: 500, message: "error interno del servidort de insertar" }
+      throw { status: 500, message: "error interno del servidor de insertar" }
     }
   }
 }
@@ -67,24 +67,18 @@ const buscarProductos = async () => {
 
 const actualizarProducto = async (pid, producto) => {
   try {
-    validarProducto(producto)
+    validarPropiedadesProducto(producto)
     const modificarProducto = await modificarProductoPorId(pid, producto)
-    return { status: 200, message: 'PRODUCTO MODIFICADO CORRECTAMENTE' }
+    return { status: 200, message: 'PRODUCTO MODIFICADO CORRECTAMENTE',producto:modificarProducto }
   } catch (error) {
     if (error.status) {
       throw error
     }
     else {
-      throw { status: 500, message: 'ERROR DESCONOCIDO.' }
+      throw { status: 500, message: 'ERROR DESCONOCIDO.',details: error.message || error }
     }
   }
 }
 
 
 module.exports = { crearProducto, buscarProductos, actualizarProducto, obetenerProductoPorId, eliminarProductoPorId }
-
-
-
-
-
-

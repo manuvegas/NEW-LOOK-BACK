@@ -1,37 +1,56 @@
+const propiedadesNecesarias = ["titulo", "precio", "descripcion", "img", "cuotas", "colores", "categoria"]
 
-const propiedadesNecesarias = ["titulo", "precio", "stock", "descripcion", "codigo"]
 const VALIDACIONES = {
   'precio': {
     validacion: (valor) => {
-      return Boolean(valor) && !isNaN(valor) && valor > 1
+      return Boolean(valor) && !isNaN(valor) && valor > 1;
     },
-    errorText: 'Precio es un valor nulo o no es un numero positivo mayor que 1'
+    errorText: 'Precio es un valor nulo o no es un número positivo mayor que 1'
   },
   'titulo': {
     validacion: (valor) => {
-      return Boolean(valor) && (typeof (valor) === 'string') && valor.length > 3
+      return Boolean(valor) && (typeof (valor) === 'string') && valor.length > 3;
     },
-    errorText: 'Titulo debe ser un valor verdadero con una longitud mayor a 3 caracteres'
-  },
-  'stock': {
-    validacion: (valor) => {
-      return (Boolean(valor) && !isNaN(valor) && valor >= 1)
-    },
-    errorText: 'El stock debe ser un numero valido mayor a 1'
+    errorText: 'Título debe ser un valor verdadero con una longitud mayor a 3 caracteres'
   },
   'descripcion': {
     validacion: (valor) => {
-      return (Boolean(valor) && isNaN(valor) && valor.length > 20 && typeof (valor) === 'string')
+      return (Boolean(valor) && isNaN(valor) && valor.length > 20 && typeof (valor) === 'string');
     },
-    errorText: 'El la descripcion debe ser un string de mas de 20 caracteres'
+    errorText: 'La descripción debe ser un string de más de 20 caracteres'
   },
-  'codigo': {
+  'img': {
     validacion: (valor) => {
-      return (Boolean(valor) && valor.length > 3)
+      return Boolean(valor) && (typeof (valor) === 'string');
     },
-    errorText: 'El codigo debe ser un string de mas de 3 caracteres'
+    errorText: 'La imagen debe ser un string no vacío'
+  },
+  'cuotas': {
+    validacion: (valor) => {
+      return Boolean(valor) && !isNaN(valor) && valor > 0;
+    },
+    errorText: 'Las cuotas deben ser un número positivo mayor que 0'
+  },
+  'colores': {
+    validacion: (valor) => {
+      return Array.isArray(valor) && valor.length > 0 && valor.every(color =>
+        typeof color === 'object' && color.nombre && typeof color.nombre === 'string' &&
+        Array.isArray(color.talles) && color.talles.length > 0 && color.talles.every(talle =>
+          typeof talle === 'object' && talle.nombre && typeof talle.nombre === 'string' &&
+          !isNaN(talle.stock) && talle.stock >= 0
+        )
+      );
+    },
+    errorText: 'Colores debe ser un array de objetos con propiedades nombre (string) y talles (array de objetos con nombre y stock)'
+  },
+  'categoria': {
+    validacion: (valor) => {
+      const categoriasValidas = ['buzo', 'remera', 'pantalon', 'campera'];
+      return Boolean(valor) && categoriasValidas.includes(valor);
+    },
+    errorText: 'Categoría debe ser uno de los valores permitidos'
   }
-}
+};
 
 const validarPropiedadesProducto = (producto) => {
   try {
@@ -67,6 +86,5 @@ const validarPropiedadesProducto = (producto) => {
     throw (error)
   }
 }
-
 
 module.exports = { validarPropiedadesProducto }

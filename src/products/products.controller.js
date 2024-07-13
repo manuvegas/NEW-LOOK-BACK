@@ -9,9 +9,10 @@ const postProductController = async (req, res) => {
     res.status(error.status).json(error)
   }
 }
+
 const getProductByIdController = async (req, res) => {
   try {
-    const { pid } = req.params
+    const { pid } = req.params 
     if (!(pid && !isNaN(pid))) {
       throw { status: 400, message: "debe ser un parametro valido" }
     }
@@ -25,7 +26,7 @@ const getProductByIdController = async (req, res) => {
 
 const deleteProductByIdController = async (req, res) => {
   try {
-    const { pid } = req.params //obtenemos el producto por id
+    const { pid } = req.params 
 
     const result = await eliminarProductoPorId(pid)
     res.status(200).json(result)
@@ -48,8 +49,8 @@ const getAllProducts = async (req, res) => {
 const putProductByIdController = async (req, res) => {
   try {
     const { pid } = req.params
-    if (!(pid && !isNaN(pid))) {
-      throw { status: 400, message: 'EL ID DEBE SER UN NÚMERO.' }
+    if (!pid) {
+      throw { status: 400, message: 'EL ID NO DEBE ESTA VACIO.' }
     }
     const resultado = await actualizarProducto(pid, req.body)
     res.status(200).json(resultado)

@@ -11,7 +11,7 @@ productRouter.put("/:pid",putProductByIdController)
 
 productRouter.delete("/:pid", deleteProductByIdController)
 
-productRouter.get("/:pid", getProductByIdController)
+productRouter.get("/:pid", getProductByIdController) 
 
 
 module.exports = { productRouter }

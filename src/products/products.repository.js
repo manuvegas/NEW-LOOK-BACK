@@ -1,14 +1,14 @@
+const Product = require("../models/Products.model")
 
-const insertarProducto = async ({ titulo, descripcion, stock, precio, codigo }) => {
+const insertarProducto = async ({ titulo, descripcion, precio, img, cuotas, colores, categoria }) => {
   try {
-    const nuevoProducto = new Product({ titulo, descripcion, stock, precio, codigo })
-    await nuevoProducto.save()
-    return nuevoProducto._id
+    const nuevoProducto = new Product({ titulo, descripcion, precio, img, cuotas, colores, categoria });
+    await nuevoProducto.save();
+    return nuevoProducto._id;
+  } catch (error) {
+    throw { status: 500, message: "Error interno en el servidor" };
   }
-  catch (error) {
-    throw { status: 500, message: "Error interno en el servidor" }
-  }
-}
+};
 
 const seleccionarProductoPorId = async (pid) => {
   try {
@@ -47,7 +47,7 @@ const deleteProductoPorId = async (pid) => {
 
 const seleccionarProductos = async () => {
   try {
-   const productos = await Product.find({})
+    const productos = await Product.find({})
     return productos
   }
   catch (error) {
@@ -55,27 +55,33 @@ const seleccionarProductos = async () => {
       throw error
     }
     else {
-      throw { status: 500, message: 'Error interno en el servidor' }
+      throw { status: 500, message: 'Error interno en el servidor', error }
     }
   }
 }
 
 const modificarProductoPorId = async (pid, producto) => {
-  const { titulo, descripcion, stock, precio, codigo } = producto
+  const { titulo, descripcion, precio, img, cuotas, colores, categoria } = producto;
   try {
-    const modificar = 'UPDATE productos SET titulo = ?, descripcion = ?, stock = ?, precio = ?, codigo = ? WHERE id = ?'
-    const valores = [titulo, descripcion, stock, precio, codigo, pid]
-    const resultadoModificar = await query(modificar, valores)
-    if (resultadoModificar.affectedRows === 0) {
-      throw { status: 404, message: 'PRODUCTO CON ID ' + pid + ' NO ENCONTRADO' }
+    const resultadoModificar = await Product.findByIdAndUpdate(pid, {
+      titulo,
+      descripcion,
+      precio,
+      img,
+      cuotas,
+      colores,
+      categoria,
+    }, { new: true });
+
+    if (!resultadoModificar) {
+      throw { status: 404, message: 'PRODUCTO CON ID ' + pid + ' NO ENCONTRADO' };
     }
+    return resultadoModificar;
   } catch (error) {
     if (error.status === 404) {
-      throw error
-    }
-    else {
-
-      throw { status: 500, message: 'ERROR INTERNO EN LA BASE DE DATOS.' }
+      throw error;
+    } else {
+      throw { status: 500, message: 'ERROR INTERNO EN LA BASE DE DATOS.', error };
     }
   }
 }

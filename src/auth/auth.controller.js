@@ -1,5 +1,5 @@
 const { validacionExistencia } = require("../helpers/validation.helper")
-const { register, login } = require("./auth.service")
+const { register, login,requestPasswordReset, verifyResetCode, resetPassword } = require("./auth.service")
 const jwt = require("jsonwebtoken")
 
 const loginController = async (req, res) => {
@@ -39,4 +39,34 @@ const verifyTokenController = (req, res) => {
 
 }
 
-module.exports = { loginController, registerController, verifyTokenController }
+const requestPasswordResetController = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const result = await requestPasswordReset(email);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error en requestPasswordResetController:', error.message);
+  }
+};
+
+const verifyResetCodeController = async (req, res) => {
+  const { email, code } = req.body;
+  try {
+    const result = await verifyResetCode(email, code);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(error.status).json(error);
+  }
+};
+
+const resetPasswordController = async (req, res) => {
+  const { email, newPassword } = req.body;
+  try {
+    const result = await resetPassword(email, newPassword);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(error.status).json(error);
+  }
+};
+
+module.exports = { loginController, registerController, verifyTokenController,requestPasswordResetController, verifyResetCodeController, resetPasswordController }

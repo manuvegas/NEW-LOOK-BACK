@@ -1,7 +1,35 @@
-const { buscarUsuarioPorEmail, insertarUsuario } = require("./auth.repository")
+const { buscarUsuarioPorEmail, insertarUsuario, guardarCodigoReset, actualizarPassword, buscarCodigoReset } = require("./auth.repository")
 const bcrtypt = require("bcrypt")
 const { validacionUsuario } = require("./utils/validationUser.util")
-const jwt = require("jsonwebtoken")
+const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
+const { sendResetEmail } = require("./utils/sendResetEmail.util");
+
+const requestPasswordReset = async (email) => {
+  const usuario = await buscarUsuarioPorEmail(email);
+  if (!usuario) {
+    throw { status: 400, message: "No existe usuario con ese email" };
+  }
+  const resetCode = crypto.randomBytes(4).toString("hex");
+  await guardarCodigoReset(email, resetCode);
+  await sendResetEmail(email, resetCode);
+  return { message: "Código de restablecimiento enviado" };
+};
+
+const verifyResetCode = async (email, code) => {
+  const codigoReset = await buscarCodigoReset(email, code);
+  if (!codigoReset) {
+    throw { status: 400, message: "Código de verificación inválido" };
+  }
+  return { message: "Código de verificación válido" };
+};
+
+const resetPassword = async (email, newPassword) => {
+  const passwordHash = await bcrtypt.hash(newPassword, 10);
+  await actualizarPassword(email, passwordHash);
+  return { message: "Contraseña actualizada correctamente" };
+};
+
 
 const register = async (usuario) => {
   try {
@@ -27,7 +55,6 @@ const register = async (usuario) => {
   }
 }
 
-
 const login = async (usuario) => {
   try {
     const { email, password } = usuario
@@ -41,7 +68,7 @@ const login = async (usuario) => {
       throw { status: 400, message: "Contraseña incorrecta" }
     }
     else {
-      const token = jwt.sign({ email, user_id: usuarioExistente.id_usuarios,role: usuarioExistente.role }, process.env.JWT_SECRET_KEY)
+      const token = jwt.sign({ email, user_id: usuarioExistente.id_usuarios, role: usuarioExistente.role }, process.env.JWT_SECRET_KEY)
       return { token, role: usuarioExistente.role }
     }
   }
@@ -55,6 +82,4 @@ const login = async (usuario) => {
   }
 }
 
-
-
-module.exports = { register, login }
+module.exports = { register, login, requestPasswordReset, verifyResetCode, resetPassword }
